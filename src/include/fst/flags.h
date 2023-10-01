@@ -189,6 +189,7 @@ class FlagRegisterer {
 };
 
 
+#ifndef NDEBUG
 #define DEFINE_VAR(type, name, value, doc)                                \
   type FLAGS_ ## name = value;                                            \
   static FlagRegisterer<type>                                             \
@@ -197,6 +198,16 @@ class FlagRegisterer {
                                                          #type,           \
                                                          __FILE__,        \
                                                          value))
+#else
+#define DEFINE_VAR(type, name, value, doc)                                \
+  type FLAGS_ ## name = value;                                            \
+  static FlagRegisterer<type>                                             \
+  name ## _flags_registerer(#name, FlagDescription<type>(&FLAGS_ ## name, \
+                                                         doc,             \
+                                                         #type,           \
+                                                         "__FILE__",      \
+                                                         value))
+#endif
 
 #define DEFINE_bool(name, value, doc) DEFINE_VAR(bool, name, value, doc)
 #define DEFINE_string(name, value, doc) \
@@ -213,8 +224,13 @@ DECLARE_string(tmpdir);
 void SetFlags(const char *usage, int *argc, char ***argv, bool remove_flags,
               const char *src = "");
 
+#ifndef NDEBUG
 #define SET_FLAGS(usage, argc, argv, rmflags) \
 SetFlags(usage, argc, argv, rmflags, __FILE__)
+#else
+#define SET_FLAGS(usage, argc, argv, rmflags) \
+SetFlags(usage, argc, argv, rmflags, "__FILE__")
+#endif
 
 // Deprecated; for backward compatibility.
 inline void InitFst(const char *usage, int *argc, char ***argv, bool rmflags) {

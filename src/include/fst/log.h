@@ -56,7 +56,12 @@ inline void FstCheck(bool x, const char* expr,
   }
 }
 
+#ifndef NDEBUG
 #define CHECK(x) FstCheck(static_cast<bool>(x), #x, __FILE__, __LINE__)
+#else
+#define CHECK(x) FstCheck(static_cast<bool>(x), #x, "__FILE__", 0)
+#endif
+
 #define CHECK_EQ(x, y) CHECK((x) == (y))
 #define CHECK_LT(x, y) CHECK((x) < (y))
 #define CHECK_GT(x, y) CHECK((x) > (y))
