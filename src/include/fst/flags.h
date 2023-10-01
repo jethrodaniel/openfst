@@ -213,8 +213,13 @@ DECLARE_string(tmpdir);
 void SetFlags(const char *usage, int *argc, char ***argv, bool remove_flags,
               const char *src = "");
 
+#ifndef NDEBUG
 #define SET_FLAGS(usage, argc, argv, rmflags) \
 SetFlags(usage, argc, argv, rmflags, __FILE__)
+#else
+#define SET_FLAGS(usage, argc, argv, rmflags) \
+SetFlags(usage, argc, argv, rmflags, "__FILE__")
+#endif
 
 // Deprecated; for backward compatibility.
 inline void InitFst(const char *usage, int *argc, char ***argv, bool rmflags) {
